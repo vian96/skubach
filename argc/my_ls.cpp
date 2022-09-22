@@ -3,11 +3,14 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <pwd.h>
+#include <grp.h>
 
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <time.h>
 
 void print_file (dirent *dnt, bool flag_a, bool flag_l);
 
@@ -88,7 +91,14 @@ void print_file (dirent *dnt, bool flag_a, bool flag_l) {
     stat(path_buffer, &struct_buf);
 
     print_permissions (struct_buf);
-    
+    printf (" %4u", struct_buf.st_nlink);
+    printf (" %s\t", getpwuid (struct_buf.st_uid)->pw_name);
+    printf (" %s\t", getgrgid (struct_buf.st_gid)->gr_name);
+    printf ("%u", struct_buf.st_size);
+
+    const char *time_str = ctime (&struct_buf.st_ctime) + 4; // +4 is to skip weekday name
+    printf ("\t%.*s", strlen (time_str) - 1, time_str);
+    printf (" %s\n", dnt->d_name);
 
     path_buffer[dir_end] = 0;
 }
@@ -106,7 +116,6 @@ void print_permissions (struct stat struct_buf) {
     printf ((struct_buf.st_mode & S_IXOTH) ? "x" : "-");
 }
 
-
 /* 
 -l data
     The file type.
@@ -118,4 +127,3 @@ void print_permissions (struct stat struct_buf) {
     Date and Time.
     File name.
 */
-
