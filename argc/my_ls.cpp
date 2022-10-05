@@ -12,12 +12,21 @@
 #include <stdlib.h>
 #include <time.h>
 
-void print_file (dirent *dnt, bool flag_a, bool flag_l);
+#include <vector>
+
+void print_dir (const char *f_name, bool flag_a, bool flag_l, bool flag_R);
+
+void print_file (dirent *dnt, bool flag_a, bool flag_l, const char *path);
 
 void print_permissions (struct stat struct_buf);
 
-char *path_buffer = (char*) calloc(PATH_MAX, sizeof (char));
-int dir_end = 0;
+#define DEB(...)
+
+// #define DEB(...) printf(__VA_ARGS__)
+
+
+// char *path_buffer = (char*) calloc(PATH_MAX, sizeof (char));
+// int dir_end = 0;
 
 int main (int argc, char **argv) {
     const struct option long_option[] =
@@ -54,41 +63,116 @@ int main (int argc, char **argv) {
     else
         f_name = ".";
 
-    strcpy (path_buffer, f_name);
-    dir_end = strlen (path_buffer);
-    path_buffer[dir_end] = '/';
-    dir_end++;
+    // strcpy (path_buffer, f_name);
+    // dir_end = strlen (path_buffer);
+    // path_buffer[dir_end] = '/';
+    // dir_end++;
 
+    print_dir (f_name, flag_a, flag_l, flag_R);
+}
+
+void print_dir (const char *f_name, bool flag_a, bool flag_l, bool flag_R) {
+    DEB ("Entering %s dir\n", f_name);
     DIR *dir = opendir (f_name);
     if (!dir) {
         printf ("ERROR: failed to open file, try checking name\n");
-        return 0;
+        return;
     }
+
+    std::vector<dirent *> directories;
 
     dirent *dnt = readdir (dir);
     while (dnt) {
-        print_file (dnt, flag_a, flag_l);
-        dnt = readdir (dir);
-    }
-    
-    printf ("\n");
+        // DEB ("Entered loop\n");
+        if (flag_R) {
+            // DEB ("Entered R flag\n");
+            if (!flag_a && dnt->d_name[0] == '.') {
+                dnt = readdir (dir);
+                continue;
+            }
 
+            if (dnt->d_type == DT_DIR) {
+                DEB ("Found dir\n");
+                directories.push_back (dnt);
+            }
+        }
+        
+        DEB ("Going to print_file %s\n", dnt->d_name);
+        print_file (dnt, flag_a, flag_l, f_name);
+        DEB ("Ended to print_file\n");
+        dnt = readdir (dir);
+        DEB ("Ended loop\n");
+    }
+
+    DEB ("Finishing while\n");
+
+    if (flag_R)
+        while (directories.size()) {
+            // printf("\n");
+
+            dirent *entry = directories.back();
+            directories.pop_back();
+
+            char file_path[PATH_MAX] = {};
+            sprintf (file_path, "%s/%s", f_name, entry->d_name);
+            printf ("\n\n%s:\n", file_path);
+
+            print_dir (file_path, flag_a, flag_l, flag_R);
+            // printf ("\n");
+        }
+
+    
+    DEB ("\nended while\n");
+    // printf ("\n");
     closedir (dir);
+
+    /* 
+    if (flag_R) {
+        DEB ("trying opendir %s\n", f_name);
+        dir = opendir (f_name);
+        DEB ("trying readdir\n");
+        dnt = readdir (dir);
+
+        while (dnt) {
+            if (!flag_a && dnt->d_name[0] == '.')
+                continue;
+
+            strcat (path_buffer, dnt->d_name);
+            // printf ("path: %s\n", path_buffer);
+            struct stat struct_buf = {};
+            stat (path_buffer, &struct_buf);
+
+            if ((S_ISDIR (struct_buf.st_mode))) {
+                DEB ("Found dir\n");
+                printf ("%s\n", path_buffer);
+                print_dir (path_buffer, flag_a, flag_l, flag_R);
+            }
+
+            dnt = readdir (dir);
+            path_buffer[dir_end] = 0;
+        }
+        
+        printf ("\n");
+        closedir (dir);
+    }
+    // */
 }
 
-void print_file (dirent *dnt, bool flag_a, bool flag_l) {
+void print_file (dirent *dnt, bool flag_a, bool flag_l, const char *path) {
     if (!flag_a && dnt->d_name[0] == '.')
         return;
     if (!flag_l) {
-        printf ("%s\n", dnt->d_name);
+        printf ("%s\t", dnt->d_name);
        return;
     }
 
-    strcat (path_buffer, dnt->d_name);
+    char file_path[PATH_MAX] = {};
+    sprintf (file_path, "%s/%s", path, dnt->d_name);
+
+    // strcat (path_buffer, dnt->d_name);
     // printf ("path: %s\n", path_buffer);
     struct stat struct_buf = {};
-
-    stat(path_buffer, &struct_buf);
+    stat(file_path, &struct_buf);
 
     print_permissions (struct_buf);
     printf (" %4u", struct_buf.st_nlink);
@@ -100,7 +184,7 @@ void print_file (dirent *dnt, bool flag_a, bool flag_l) {
     printf ("\t%.*s", strlen (time_str) - 1, time_str);
     printf (" %s\n", dnt->d_name);
 
-    path_buffer[dir_end] = 0;
+    // path_buffer[dir_end] = 0;
 }
 
 void print_permissions (struct stat struct_buf) {
