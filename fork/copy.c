@@ -1,0 +1,3 @@
+ELFœ__stack_chk_failloseIBC_2.4_ITM_registerTMCloneTable	ÄÃ
+òÿ%õ-úòÿ%Õ-úòÿ%µ-úòÿ%•-óúòÿ%u-H=y-H)şH‰ğHÁî?HÁøHÆHÑştH‹-UHƒ=â,úUH‰åHƒì H‰}èHƒ}è…ÀtHrÇè@şÿÿ‰EüH‹EèºHƒ$øßÿÿ†ıÿÿ‰…pßÿÿƒ½pßÿÿÿÿHƒ½ßÿÿÿƒ½`ßÿÿ@t.‹…œßÿÿH ßÿÿº@\ßÿÿëŒH‹…ßÿÿH‰Çèjûÿÿ‹…œßÿÿ‰Çè­ûÿÿ‹…\ßÿÿ‰ÆH=H
+ÿÿ…Øßÿÿƒ½€ßÿÿ>~ë§H‹…ˆßÿÿH‰Çè×ùÿÿ‹•hßÿÿ‹…dßÿÿ‰ÆH="	UH-,%]A\A]A^A_Ãff.„.cppening read filetedn reading from pipe/ÿœE E(ŒD0†H8ƒG@n8A0A(B BBB.0-17ubuntu1~20.04) 9.3.0¥l_dtors_auxry_FRAME_END___EH_FRAME_HDRsterTMCloneTablefclose@@GLIBC_2.2.5.2.52.2.5LIBC_2.2.5_handleLEc99_scanf@@GLIBC_2.7a_finalize@@GLIBC_2.2.5trtabagdynrame_hdr.comment/

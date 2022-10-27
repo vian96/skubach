@@ -102,7 +102,7 @@ int main (int argc, char **argv) {
     }
 
     const int BUF_SIZE = 64;
-    char *buf = (char*) calloc (BUF_SIZE, sizeof (char));
+    char buf[BUF_SIZE] = {};
     while (fgets (buf, BUF_SIZE, f_from) != NULL)
         fputs (buf, f_to);
 
